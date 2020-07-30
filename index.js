@@ -1,3 +1,12 @@
+/**
+ * Show map, draw some market and market custom position
+ * @author Erika L. Basurto <iamdleonor@gmail.com>
+ * @version 1.0.0
+ */
+
+/**
+ * Places
+ */
 var places = [
   ["Puebla", -19.033333, -98.183334, 4],
   ["Baja California", 32.663334, -115.467781, 5],
@@ -6,6 +15,9 @@ var places = [
   ["Maroubra Beach", -33.950198, 151.259302, 1],
 ];
 
+/**
+ * Calculate distance
+ */
 const calculateDistance = (lat0, lng0, lat1, lng1) => {
   let x1 = new google.maps.LatLng(lat0, lng0);
   let x2 = new google.maps.LatLng(lat1, lng1);
@@ -13,6 +25,10 @@ const calculateDistance = (lat0, lng0, lat1, lng1) => {
   return parseFloat(distance / 1000).toFixed(3);
 };
 
+/**
+ * Request handler button to send a SMS
+ * @param {dom} event 
+ */
 const sendSMS = (event) => {
   lat0 = event.dataset.lato;
   lng0 = event.dataset.lngo;
@@ -45,6 +61,11 @@ const sendSMS = (event) => {
     });
 };
 
+/**
+ * Render description market
+ * @param {object} data: {<name place, lat, lng, deep>}: item's info 
+ * @param {string lat, string lng} locationOrigen: Customer coordinates
+ */
 const renderContentInfo = (data, locationOrigen) => {
   let distance = calculateDistance(
     locationOrigen.lat,
@@ -73,6 +94,12 @@ const renderContentInfo = (data, locationOrigen) => {
         `;
 };
 
+/**
+ * Draw market
+ * @param {*} map 
+ * @param {object} data: [{<name place, lat, lng, deep>},...]: array places
+ * @param {string lat, string lng} locationOrigen: Customer coordinates
+ */
 const draw = (map, data, locationOrigen) => {
   var marker = new google.maps.Marker({
     position: { lat: data[1], lng: data[2] },
@@ -89,12 +116,20 @@ const draw = (map, data, locationOrigen) => {
   });
 };
 
+/**
+ * Draw markerts
+ * @param {*} map 
+ * @param {string lat, string lng} locationOrigen: Customer coordinates
+ */
 const drawList = (map, locationOrigen) => {
   places.forEach((item) => {
     draw(map, item, locationOrigen);
   });
 };
 
+/**
+ * Main
+ */
 navigator.geolocation.getCurrentPosition(function (location) {
   var map;
   var center = {
