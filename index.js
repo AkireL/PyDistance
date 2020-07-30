@@ -7,12 +7,21 @@
 /**
  * Places
  */
+var imagePlace =  {
+  url: './corner.png',
+  // This marker is 20 pixels wide by 32 pixels high.
+  size: new google.maps.Size(35, 35),
+  // The origin for this image is (0, 0).
+  origin: new google.maps.Point(0, 0),
+  // The anchor for this image is the base of the flagpole at (0, 32).
+  anchor: new google.maps.Point(0, 35)
+};
 var places = [
-  ["Puebla", -19.033333, -98.183334, 4],
-  ["Baja California", 32.663334, -115.467781, 5],
-  ["Isla Mujeres", 21.2338, -86.7331, 3],
-  ["Oaxaca", -17.0669, -96.7203, 2],
-  ["Maroubra Beach", -33.950198, 151.259302, 1],
+  ["Guadalajara", 20.6737777,-103.405454, 2],
+  ["Baja California", 32.663334, -115.467781, 2],
+  ["Isla Mujeres", 21.2338, -86.7331, 2],
+  ["Silicon Valley", 37.4030185,-122.3212949, 2],
+  ["New York", 40.6976701,-74.2598758, 2],
 ];
 
 /**
@@ -27,7 +36,7 @@ const calculateDistance = (lat0, lng0, lat1, lng1) => {
 
 /**
  * Request handler button to send a SMS
- * @param {dom} event 
+ * @param {dom} event
  */
 const sendSMS = (event) => {
   lat0 = event.dataset.lato;
@@ -41,16 +50,28 @@ const sendSMS = (event) => {
   sendSMSService(lat0, lng0, lat1, lng1, distancia, destination)
     .then(function (data) {
       if (data.statusCode != 200) {
-        vanillaToast.error( data.statusCode,{duration:8000, fadeDuration:120});
+        vanillaToast.error(data.statusCode, {
+          duration: 8000,
+          fadeDuration: 120,
+        });
       } else {
-        vanillaToast.success("Mensaje enviado correctamente",{duration:2000, fadeDuration:120});
+        vanillaToast.success("Mensaje enviado correctamente", {
+          duration: 2000,
+          fadeDuration: 120,
+        });
       }
     })
     .catch(function (error) {
       if (error.response && error.response.data) {
-        vanillaToast.error( error.response.data.error || "Error al procesar",{duration:8000, fadeDuration:120});
+        vanillaToast.error(error.response.data.error || "Error al procesar", {
+          duration: 8000,
+          fadeDuration: 120,
+        });
       } else {
-        vanillaToast.error( error.message,{duration:8000, fadeDuration:120});
+        vanillaToast.error(error.message, {
+          duration: 8000,
+          fadeDuration: 120,
+        });
       }
     })
     .finally(function () {
@@ -63,7 +84,7 @@ const sendSMS = (event) => {
 
 /**
  * Render description market
- * @param {object} data: {<name place, lat, lng, deep>}: item's info 
+ * @param {object} data: {<name place, lat, lng, deep>}: item's info
  * @param {string lat, string lng} locationOrigen: Customer coordinates
  */
 const renderContentInfo = (data, locationOrigen) => {
@@ -87,7 +108,7 @@ const renderContentInfo = (data, locationOrigen) => {
                 data-lato="${locationOrigen.lat}"
                 data-lngo="${locationOrigen.lng}"
                 type="button" 
-                class="btn btn-success"
+                class="btn btn-success btn-sm"
                 onclick="sendSMS(this)">
                 Enviar SMS
             </button>
@@ -96,15 +117,17 @@ const renderContentInfo = (data, locationOrigen) => {
 
 /**
  * Draw market
- * @param {*} map 
+ * @param {*} map
  * @param {object} data: [{<name place, lat, lng, deep>},...]: array places
  * @param {string lat, string lng} locationOrigen: Customer coordinates
  */
 const draw = (map, data, locationOrigen) => {
+ 
   var marker = new google.maps.Marker({
     position: { lat: data[1], lng: data[2] },
     map: map,
     title: data[0],
+    icon: imagePlace,
     zIndex: data[3],
   });
 
@@ -118,7 +141,7 @@ const draw = (map, data, locationOrigen) => {
 
 /**
  * Draw markerts
- * @param {*} map 
+ * @param {*} map
  * @param {string lat, string lng} locationOrigen: Customer coordinates
  */
 const drawList = (map, locationOrigen) => {
@@ -130,28 +153,39 @@ const drawList = (map, locationOrigen) => {
 /**
  * Main
  */
-navigator.geolocation.getCurrentPosition(function (location) {
-  var map;
-  var center = {
-    lat: location.coords.latitude,
-    lng: location.coords.longitude,
-  };
-  function initMap() {
-    map = new google.maps.Map(document.getElementById("map"), {
-      center: center,
-      zoom: 6,
-    });
+document.addEventListener("DOMContentLoaded", function () {
+  navigator.geolocation.getCurrentPosition(function (location) {
+    var map;
+    var center = {
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+    };
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: center,
+        zoom: 4,
+      });
+      var image = {
+        url: './demographic.png',
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(35, 35),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(0, 35)
+      };
 
-    var marker = new google.maps.Marker({
-      position: {
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
-      },
-      map: map,
-      title: "Tu ubicación",
-    });
-    drawList(map, center);
-  }
-  initMap();
+      var marker = new google.maps.Marker({
+        position: {
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
+        },
+        map: map,
+        icon: image,
+        title: "Tu ubicación",
+      });
+      drawList(map, center);
+    }
+    initMap();
+  });
 });
-
